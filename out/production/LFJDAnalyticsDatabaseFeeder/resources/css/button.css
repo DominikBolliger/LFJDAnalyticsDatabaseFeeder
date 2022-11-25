@@ -1,0 +1,14 @@
+.visible-button{
+    -fx-background-color: #344955;
+    -fx-text-fill: #FFFFFF;
+}
+
+.visible-button:hover{
+    -fx-background-color: #f60024;
+    -fx-text-fill: #FFFFFF;
+}
+
+.visible-button:pressed{
+    -fx-background-color: #00f621;
+    -fx-text-fill: #FFFFFF;
+}
