@@ -11,7 +11,7 @@ public class LFJDAnalyticsDatabaseFeederApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(LFJDAnalyticsDatabaseFeederApplication.class.getResource("/view/LFJDAnalyticsDatabaseFeeder-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         primaryStage.setResizable(false);
-        primaryStage.setTitle("Generator!");
+        primaryStage.setTitle("LFJD Analytics");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

@@ -3,6 +3,7 @@ package util;
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
 import modell.Article;
+import modell.DataBehaviour;
 
 import java.sql.*;
 import java.time.LocalDate;

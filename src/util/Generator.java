@@ -3,6 +3,7 @@ package util;
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
 import modell.DBData;
+import modell.DataBehaviour;
 
 import java.time.LocalDate;
 import java.util.Random;
@@ -35,8 +36,15 @@ public class Generator {
             int posInOrder = rnd.nextInt(20 - 10 + 1) + 10;
             con.createOrder(fromDate.plusDays(i));
             for (int j = 0; j < posInOrder; j++) {
-
-                new DBData(fromDate.plusDays(i), rnd.nextInt(10-1+1)+1, orderID + i, ordArtID, 1);
+                int articleID = rnd.nextInt(10-1+1)+1;
+                int behaviourID = 0;
+                for (DataBehaviour behaviour:DataBehaviour.getBehaviourList()) {
+                    if (behaviour.getId() == articleID){
+                        behaviourID = behaviour.getId();
+                        break;
+                    }
+                }
+                new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
                 ordArtID++;
             }
         }
@@ -47,8 +55,8 @@ public class Generator {
         Thread thread = new Thread(() -> {
             int count = 0;
             con.connect();
-            con.getArticles();
             con.createBehaviours();
+            con.getArticles();
             Platform.runLater(() -> controller.taResult.appendText("Database connected"));
             long startTime = System.nanoTime();
             createData(con.getLastArticleOrderID(), con.getLastOrderID());

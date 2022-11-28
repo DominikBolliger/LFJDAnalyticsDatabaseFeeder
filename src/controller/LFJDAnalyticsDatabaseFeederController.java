@@ -5,17 +5,25 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import util.Generator;
 
 public class LFJDAnalyticsDatabaseFeederController {
     @FXML
     public Button btnGenerate;
+    @FXML
     public Button btnClose;
+    @FXML
     public DatePicker fromDatePicker;
+    @FXML
     public DatePicker toDatePicker;
+    @FXML
     public TextArea taResult;
+    @FXML
     public ProgressBar pgbResult;
+    @FXML
+    public VBox vBoxLog;
 
     public void generate() {
         if (fromDatePicker.getValue() != null && toDatePicker.getValue() != null && fromDatePicker.getValue().isBefore(toDatePicker.getValue())) {
