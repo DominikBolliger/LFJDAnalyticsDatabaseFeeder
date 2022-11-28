@@ -2,10 +2,12 @@ package util;
 
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
+import modell.Article;
 import modell.DBData;
 import modell.DataBehaviour;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -38,14 +40,24 @@ public class Generator {
             for (int j = 0; j < posInOrder; j++) {
                 int articleID = rnd.nextInt(10-1+1)+1;
                 int behaviourID = 0;
-                for (DataBehaviour behaviour:DataBehaviour.getBehaviourList()) {
-                    if (behaviour.getId() == articleID){
-                        behaviourID = behaviour.getId();
-                        break;
+                int multiplicator = 0;
+                int month = fromDate.plusDays(i).getMonthValue();
+                List<Article> list = Article.getArticleList();
+                for (Article article:list){
+                    if (article.getArticleID() == articleID){
+                        for (DataBehaviour behaviour:DataBehaviour.getBehaviourList()) {
+                            if (article.getBehaviourID() == behaviour.getId()){
+                                behaviourID = behaviour.getId();
+                                multiplicator = behaviour.getMultiplicators().get(month-1);
+                                for (int k = 0; k < multiplicator; k++) {
+                                    new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
+                                    ordArtID++;
+                                }
+                            }
+                        }
                     }
                 }
-                new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
-                ordArtID++;
+
             }
         }
     }

@@ -71,7 +71,7 @@ public class DBConnection {
         try {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("Select * from semestertest.article");
-            if (rs.next()) {
+            while (rs.next()) {
                 new Article(rs.getInt("articleID"), rs.getString("name"), rs.getInt("fk_behaviourID"));
             }
         } catch (SQLException e) {
@@ -96,7 +96,7 @@ public class DBConnection {
             ResultSet rs = stmt.executeQuery("SELECT * from semestertest.behaviour");
             while (rs.next()) {
                 String name = rs.getString("name");
-                int id = rs.getInt("behaviourID");
+                int id = rs.getInt("BehaviourID");
                 List<Integer> multiplicators = new ArrayList<Integer>();
                 multiplicators.add(rs.getInt("january"));
                 multiplicators.add(rs.getInt("february"));

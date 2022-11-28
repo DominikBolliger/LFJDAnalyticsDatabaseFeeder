@@ -15,4 +15,20 @@ public class Article {
         this.behaviourID = behaviourID;
         articleList.add(this);
     }
+
+    public int getArticleID() {
+        return articleID;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public int getBehaviourID() {
+        return behaviourID;
+    }
+
+    public static List<Article> getArticleList() {
+        return articleList;
+    }
 }
