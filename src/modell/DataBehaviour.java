@@ -5,6 +5,9 @@ import java.util.List;
 
 public class DataBehaviour {
 
+    //TODO: Take Behaviour away from Db and Hard Code it here
+    //TODO: Make a list for articles with behaviour because we take behaviourID away from DB maybe with ini file
+
     private String name;
     private int id;
     private List<Integer> multiplicators;

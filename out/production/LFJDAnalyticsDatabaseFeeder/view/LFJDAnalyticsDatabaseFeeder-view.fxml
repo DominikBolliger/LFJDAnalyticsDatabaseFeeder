@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" style="-fx-background-color: #232F34;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LFJDAnalyticsDatabaseFeederController">
+<VBox alignment="CENTER" style="-fx-background-color: #212121;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LFJDAnalyticsDatabaseFeederController">
     <children>
         <HBox>
             <children>
@@ -38,16 +38,29 @@
         </HBox>
       <HBox>
          <children>
-                <Button fx:id="btnGenerate" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#generate" styleClass="visible-button" text="Generate" HBox.hgrow="ALWAYS">
-                    <HBox.margin>
-                        <Insets bottom="10.0" left="80.0" right="10.0" />
-                    </HBox.margin>
-            </Button>
-                <Button fx:id="btnClose" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#closeStage" styleClass="visible-button" text="Cancel" HBox.hgrow="ALWAYS">
-                    <HBox.margin>
-                        <Insets bottom="10.0" left="5.0" right="10.0" />
-                    </HBox.margin>
-            </Button>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Button fx:id="btnGenerate" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#generate" styleClass="visible-button" text="Generate">
+                     <VBox.margin>
+                        <Insets left="80.0" right="5.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="btnTruncate" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#btnTruncateClick" styleClass="visible-button" text="Truncate" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets left="80.0" right="5.0" top="10.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Button fx:id="btnClose" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#closeStage" styleClass="visible-button" text="Cancel">
+                     <VBox.margin>
+                        <Insets left="5.0" right="10.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
          </children>
       </HBox>
         <VBox fx:id="vBoxLog">

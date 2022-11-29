@@ -115,15 +115,6 @@ public class DBConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (DataBehaviour data : DataBehaviour.getBehaviourList()) {
-            System.out.println("Name: " + data.getName());
-            System.out.println("ID: " + data.getId());
-            for (int mutli : data.getMultiplicators()) {
-                System.out.println("Multiplicator: " + mutli);
-            }
-            System.out.println("-------------------------------------------");
-            System.out.println();
-        }
     }
 
     public void writeDataToDB(int count, int orderID, int articleID, LFJDAnalyticsDatabaseFeederController controller) {
@@ -134,6 +125,19 @@ public class DBConnection {
             Platform.runLater(() -> controller.taResult.appendText(count + ". orderID: " + orderID + " | articleID: " + articleID + "\r\n"));
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void truncateTables(LFJDAnalyticsDatabaseFeederController controller) {
+        Statement stmt;
+        try {
+            stmt = con.createStatement();
+            stmt.executeUpdate("call TruncateTables()");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Platform.runLater(() -> controller.taResult.appendText("Tables truncated"));
         }
     }
 }

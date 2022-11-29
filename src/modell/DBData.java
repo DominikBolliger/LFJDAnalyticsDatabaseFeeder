@@ -12,7 +12,7 @@ public class DBData {
     private int orderArticleID;
 
     private int behaviourID;
-    public static List<DBData> dataList = new ArrayList<>();
+    private static List<DBData> dataList = new ArrayList<>();
 
     public DBData(LocalDate buyDate, int articleID, int orderID, int orderArticleID, int behaviourID){
         this.buyDate = buyDate;
@@ -39,15 +39,12 @@ public class DBData {
         return orderArticleID;
     }
 
-    public String toString(){
-        System.out.println(this.buyDate  );
-        return null;
+    public static List<DBData> getDataList() {
+        return dataList;
     }
 
-    public static void printList(){
-        for (DBData data:dataList) {
-            System.out.println("Date: " + data.buyDate + " | ArticleID: " + data.articleID + " | OrderID: " + data.orderID + " | OrdAartID: " + data.orderArticleID );
-        }
+    public static void resetDataList(){
+        dataList.clear();
     }
 
 }

@@ -7,6 +7,7 @@ import modell.DBData;
 import modell.DataBehaviour;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -31,14 +32,22 @@ public class Generator {
     }
 
     public void createData(int lastArticleOrderID, int lastOrderID){
+        DBData.resetDataList();
+        System.out.println(DBData.getDataList().size());
         Random rnd = new Random();
         int ordArtID = lastArticleOrderID;
         int orderID= lastOrderID;
+
+        //TODO: make sure there are more than just 1 order per Day
+
         for (int i = 0; i < numberOfDays; i++) {
-            int posInOrder = rnd.nextInt(20 - 10 + 1) + 10;
+            int posInOrder = rnd.nextInt(20 - 5 + 1) + 5;
             con.createOrder(fromDate.plusDays(i));
             for (int j = 0; j < posInOrder; j++) {
-                int articleID = rnd.nextInt(10-1+1)+1;
+
+                //TODO: maybe dont just take random Articles
+
+                int articleID = rnd.nextInt(11-1+1)+1;
                 int behaviourID = 0;
                 int multiplicator = 0;
                 int month = fromDate.plusDays(i).getMonthValue();
@@ -69,22 +78,21 @@ public class Generator {
             con.connect();
             con.createBehaviours();
             con.getArticles();
-            Platform.runLater(() -> controller.taResult.appendText("Database connected"));
+            Platform.runLater(() -> controller.taResult.appendText("Database connected\n"));
             long startTime = System.nanoTime();
             createData(con.getLastArticleOrderID(), con.getLastOrderID());
-            for (int i = 0; i < DBData.dataList.size(); i++) {
+            for (int i = 0; i < DBData.getDataList().size(); i++) {
                 count = i;
-                con.writeDataToDB(i, DBData.dataList.get(i).getOrderID(), DBData.dataList.get(i).getArticleID(), controller);
+                con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
                 int finalI = i;
-                Platform.runLater(() -> controller.pgbResult.setProgress((float)1/ DBData.dataList.size()* finalI));
+                Platform.runLater(() -> controller.pgbResult.setProgress((float)1/ DBData.getDataList().size()* finalI));
                 Util.delay(5);
             }
             con.close();
             long endTime = System.nanoTime();
             long duration = (endTime - startTime)/1000000000;
-            System.out.println(duration);
             int finalCount = count;
-            Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds.."));
+            Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
         });
         thread.start();
     }

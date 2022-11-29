@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -7,6 +8,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import util.DBConnection;
 import util.Generator;
 
 public class LFJDAnalyticsDatabaseFeederController {
@@ -45,5 +47,12 @@ public class LFJDAnalyticsDatabaseFeederController {
     public void closeStage() {
         Stage stage = (Stage) btnGenerate.getScene().getWindow();
         stage.close();
+    }
+
+    public void btnTruncateClick(ActionEvent actionEvent) {
+        DBConnection con = new DBConnection();
+        con.connect();
+        con.truncateTables(this);
+        con.close();
     }
 }
