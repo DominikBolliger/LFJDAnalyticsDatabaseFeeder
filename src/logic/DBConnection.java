@@ -1,4 +1,4 @@
-package util;
+package logic;
 
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;

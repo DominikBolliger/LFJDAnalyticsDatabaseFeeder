@@ -1,13 +1,14 @@
-package util;
+package logic;
 
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
+import logic.DBConnection;
 import modell.Article;
 import modell.DBData;
 import modell.DataBehaviour;
+import util.Util;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 

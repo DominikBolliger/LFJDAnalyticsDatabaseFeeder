@@ -20,22 +20,23 @@ public class DataBehaviour {
     private int id;
     private List<Integer> multiplicators;
     private static List<DataBehaviour> behaviourList = new ArrayList<>();
+    private static Document document;
 
-    public DataBehaviour(String name, int id, List<Integer> multiplicators){
+    public DataBehaviour(String name, int id, List<Integer> multiplicators) {
         this.name = name;
         this.id = id;
         this.multiplicators = multiplicators;
         behaviourList.add(this);
     }
 
-    public static void createBehaviourFromXml() {
+    public static void getXmlFile(){
         File file = new File("C:\\Program Files\\LFJDAnalyticsDatabaseFeeder\\behaviours.xml");
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = null;
-        Document document;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
             document = documentBuilder.parse(file);
+            document.normalize();
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -43,19 +44,36 @@ public class DataBehaviour {
         } catch (SAXException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        NodeList nodes = document.getElementsByTagName("*");
+    public static void createBehaviourFromXml() {
+        String name;
+        int id;
+        List<Integer> multiplicatorsList;
 
-        String name = "";
-        int id = 0;
-        List<Integer> multiplicators;
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            multiplicators = new ArrayList<>();
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) node;
-                System.out.println(element.getElementsByTagName(""));
+        NodeList behaviourNodes = document.getElementsByTagName("behaviour");
+        Node current;
+        for (int i = 0; i < behaviourNodes.getLength(); i++) {
+            current = behaviourNodes.item(i);
+            name = "";
+            id = 0;
+            multiplicatorsList = new ArrayList<>();
+            if (current.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList behaviourNodeChilds = current.getChildNodes();
+                Node currentChild;
+                for (int j = 0; j < behaviourNodeChilds.getLength(); j++) {
+                    currentChild = behaviourNodeChilds.item(j);
+                    if (currentChild.getNodeType() == Node.ELEMENT_NODE) {
+                        if (currentChild.getNodeName() == "id") {
+                            id = Integer.parseInt(currentChild.getTextContent());
+                        } else if (currentChild.getNodeName() == "name") {
+                            name = currentChild.getTextContent();
+                        } else if (currentChild.getNodeName() == "multiplicators") {
+                            multiplicatorsList.add(Integer.valueOf(currentChild.getTextContent()));
+                        }
+                    }
+                }
+                new DataBehaviour(name, id, multiplicatorsList);
             }
         }
     }
