@@ -9,6 +9,8 @@ public class Article {
     private int behaviourID;
     private static List<Article> articleList = new ArrayList<>();
 
+    //TODO: Make sure articles are coming from th db into an XML file and then associate behaviour here
+
     public Article(int articleID, String name, int behaviourID) {
         this.articleID = articleID;
         this.name = name;
