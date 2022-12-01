@@ -89,34 +89,6 @@ public class DBConnection {
         }
     }
 
-    public void createBehaviours() {
-        Statement stmt = null;
-        try {
-            stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * from semestertest.behaviour");
-            while (rs.next()) {
-                String name = rs.getString("name");
-                int id = rs.getInt("BehaviourID");
-                List<Integer> multiplicators = new ArrayList<Integer>();
-                multiplicators.add(rs.getInt("january"));
-                multiplicators.add(rs.getInt("february"));
-                multiplicators.add(rs.getInt("march"));
-                multiplicators.add(rs.getInt("april"));
-                multiplicators.add(rs.getInt("may"));
-                multiplicators.add(rs.getInt("june"));
-                multiplicators.add(rs.getInt("july"));
-                multiplicators.add(rs.getInt("august"));
-                multiplicators.add(rs.getInt("september"));
-                multiplicators.add(rs.getInt("october"));
-                multiplicators.add(rs.getInt("november"));
-                multiplicators.add(rs.getInt("december"));
-                new DataBehaviour(name, id, multiplicators);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void writeDataToDB(int count, int orderID, int articleID, LFJDAnalyticsDatabaseFeederController controller) {
         Statement stmt;
         try {

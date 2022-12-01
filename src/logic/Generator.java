@@ -14,8 +14,7 @@ import java.util.Random;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-public class Generator {
-
+public class Generator extends Thread {
     private LocalDate fromDate;
     private LocalDate toDate;
     private long numberOfDays;
@@ -32,12 +31,12 @@ public class Generator {
         this.con = new DBConnection();
     }
 
-    public void createData(int lastArticleOrderID, int lastOrderID){
+    public void createData(int lastArticleOrderID, int lastOrderID) {
         DBData.resetDataList();
         System.out.println(DBData.getDataList().size());
         Random rnd = new Random();
         int ordArtID = lastArticleOrderID;
-        int orderID= lastOrderID;
+        int orderID = lastOrderID;
 
         //TODO: make sure there are more than just 1 order per Day
 
@@ -48,17 +47,17 @@ public class Generator {
 
                 //TODO: maybe dont just take random Articles
 
-                int articleID = rnd.nextInt(11-1+1)+1;
+                int articleID = rnd.nextInt(11 - 1 + 1) + 1;
                 int behaviourID = 0;
                 int multiplicator = 0;
                 int month = fromDate.plusDays(i).getMonthValue();
                 List<Article> list = Article.getArticleList();
-                for (Article article:list){
-                    if (article.getArticleID() == articleID){
-                        for (DataBehaviour behaviour:DataBehaviour.getBehaviourList()) {
-                            if (article.getBehaviourID() == behaviour.getId()){
+                for (Article article : list) {
+                    if (article.getArticleID() == articleID) {
+                        for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
+                            if (article.getBehaviourID() == behaviour.getId()) {
                                 behaviourID = behaviour.getId();
-                                multiplicator = behaviour.getMultiplicators().get(month-1);
+                                multiplicator = behaviour.getMultiplicators().get(month - 1);
                                 for (int k = 0; k < multiplicator; k++) {
                                     new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
                                     ordArtID++;
@@ -67,34 +66,28 @@ public class Generator {
                         }
                     }
                 }
-
             }
         }
     }
 
     public void start() {
-
-        Thread thread = new Thread(() -> {
-            int count = 0;
-            con.connect();
-            con.createBehaviours();
-            con.getArticles();
-            Platform.runLater(() -> controller.taResult.appendText("Database connected\n"));
-            long startTime = System.nanoTime();
-            createData(con.getLastArticleOrderID(), con.getLastOrderID());
-            for (int i = 0; i < DBData.getDataList().size(); i++) {
-                count = i;
-                con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
-                int finalI = i;
-                Platform.runLater(() -> controller.pgbResult.setProgress((float)1/ DBData.getDataList().size()* finalI));
-                Util.delay(5);
-            }
-            con.close();
-            long endTime = System.nanoTime();
-            long duration = (endTime - startTime)/1000000000;
-            int finalCount = count;
-            Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
-        });
-        thread.start();
+        int count = 0;
+        con.connect();
+        con.getArticles();
+        Platform.runLater(() -> controller.taResult.appendText("Database connected\n"));
+        long startTime = System.nanoTime();
+        createData(con.getLastArticleOrderID(), con.getLastOrderID());
+        for (int i = 0; i < DBData.getDataList().size(); i++) {
+            count = i;
+            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
+            int finalI = i;
+            Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
+            Util.delay(5);
+        }
+        con.close();
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        int finalCount = count;
+        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
     }
 }
