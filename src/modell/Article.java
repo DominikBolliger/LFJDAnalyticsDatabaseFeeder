@@ -34,7 +34,7 @@ public class Article {
         return articleID;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
 

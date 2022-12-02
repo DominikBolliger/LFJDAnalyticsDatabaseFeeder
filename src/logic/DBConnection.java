@@ -40,6 +40,7 @@ public class DBConnection {
     public void close() {
         try {
             con.close();
+            Platform.runLater(() -> controller.taResult.appendText("Connection closed..\n"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,7 +50,7 @@ public class DBConnection {
         int articleOrderNumber = 0;
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("Select articleorderID from position order by articleorderID DESC LIMIT 1");
+            ResultSet rs = stmt.executeQuery("Select positionID from position order by positionID DESC LIMIT 1");
             if (rs.next()) {
                 articleOrderNumber = rs.getInt("articleorderID");
             }
@@ -66,7 +67,7 @@ public class DBConnection {
         int orderNumber = 0;
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("Select orderID from order order by orderID DESC LIMIT 1");
+            ResultSet rs = stmt.executeQuery("Select orderID from `order` order by orderID DESC LIMIT 1");
             if (rs.next()) {
                 orderNumber = rs.getInt("orderID");
             }
@@ -95,24 +96,25 @@ public class DBConnection {
         Statement stmt;
         try {
             stmt = con.createStatement();
-            stmt.executeUpdate("INSERT INTO order (buyDate) VALUES ('" + value.toString() + "')");
+            stmt.executeUpdate("INSERT INTO `order` (orderdatetime) VALUES ('" + value.toString() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void writeDataToDB(int count, int orderID, int articleID, LFJDAnalyticsDatabaseFeederController controller) {
+    public void writeDataToDB(int count, int orderID, int articleID) {
         Statement stmt;
         try {
             stmt = con.createStatement();
-            stmt.executeUpdate("INSERT INTO articleorder (fk_orderID, fk_articleID) VALUES ('" + orderID + "','" + articleID + "')");
-            Platform.runLater(() -> controller.taResult.appendText(count + ". orderID: " + orderID + " | articleID: " + articleID + "\r\n"));
+            stmt.executeUpdate("INSERT INTO position (fk_orderID, fk_articleID) VALUES ('" + orderID + "','" + articleID + "')");
+            Platform.runLater(() -> controller.taResult.appendText(count + ". ArticleID: " + articleID + " | OrderID: " + orderID + "\n"));
+            System.out.println(count);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void truncateTables(LFJDAnalyticsDatabaseFeederController controller) {
+    public void truncateTables() {
         Statement stmt;
         try {
             stmt = con.createStatement();
@@ -121,7 +123,7 @@ public class DBConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            Platform.runLater(() -> controller.taResult.appendText("Tables truncated"));
+            Platform.runLater(() -> controller.taResult.appendText("Tables truncated\n"));
         }
     }
 }

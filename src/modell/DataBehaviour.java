@@ -73,7 +73,7 @@ public class DataBehaviour {
                             name = currentChild.getTextContent();
                         } else if (currentChild.getNodeName() == "article") {
                             articleList.add(Integer.valueOf(currentChild.getTextContent()));
-                        }else if (currentChild.getNodeName() == "multiplicatorsList") {
+                        }else if (currentChild.getNodeName() == "multiplicators") {
                             multiplicatorsList.add(Integer.valueOf(currentChild.getTextContent()));
                         }
                     }

@@ -1,6 +1,5 @@
 package controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -9,17 +8,17 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import logic.Generator;
-import modell.DataBehaviour;
 import logic.DBConnection;
 
-import javax.xml.crypto.Data;
-import java.util.List;
+import java.time.LocalDate;
 
 public class LFJDAnalyticsDatabaseFeederController {
     @FXML
     public Button btnGenerate;
     @FXML
     public Button btnClose;
+    @FXML
+    public Button btnTruncate;
     @FXML
     public DatePicker fromDatePicker;
     @FXML
@@ -32,9 +31,22 @@ public class LFJDAnalyticsDatabaseFeederController {
     public VBox vBoxLog;
     public DBConnection con;
 
+    @FXML
+    public void initialize(){
+        LocalDate today = LocalDate.now();
+        LocalDate nextYearDay = today.plusDays(365);
+
+        fromDatePicker.setValue(today);
+        toDatePicker.setValue(nextYearDay);
+
+        con = new DBConnection("jdbc:mysql://localhost:3306/lfjd-analytics", "root", "", this);
+
+    }
+
     public void generate() {
         if (fromDatePicker.getValue() != null && toDatePicker.getValue() != null && fromDatePicker.getValue().isBefore(toDatePicker.getValue())) {
-            con = new DBConnection("jdbc:mysql://localhost:3306/lfjd-analytics", "root", "", this);
+            btnGenerate.setDisable(true);
+            btnTruncate.setDisable(true);
             Generator gen = new Generator(fromDatePicker.getValue(), toDatePicker.getValue(), this, con);
             gen.start();
         } else {
@@ -57,7 +69,8 @@ public class LFJDAnalyticsDatabaseFeederController {
 
     public void btnTruncateClick() {
         con.connect();
-        con.truncateTables(this);
+        con.truncateTables();
         con.close();
     }
+
 }

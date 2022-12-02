@@ -1,13 +1,18 @@
 package logic;
 
+import com.mysql.cj.exceptions.CJOperationNotSupportedException;
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import modell.Article;
 import modell.DBData;
 import modell.DataBehaviour;
+import modell.Position;
+import util.Const;
 import util.Util;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +26,8 @@ public class Generator extends Thread {
     private DBConnection con;
     private LFJDAnalyticsDatabaseFeederController controller;
 
+    private Random rnd;
+
     public Generator(LocalDate fromDate, LocalDate toDate, LFJDAnalyticsDatabaseFeederController controller, DBConnection con) {
         this.fromDate = fromDate;
         this.toDate = toDate;
@@ -30,74 +37,89 @@ public class Generator extends Thread {
         this.con = con;
     }
 
-    public void createData(int lastArticleOrderID, int lastOrderID) {
-        DBData.resetDataList();
-        System.out.println(DBData.getDataList().size());
-        Random rnd = new Random();
-        int ordArtID = lastArticleOrderID;
-        int orderID = lastOrderID;
-
-        //TODO: make sure there are more than just 1 order per Day
+    public void createData() {
+        rnd = new Random();
+        int rndOrdersPerActualDay;
+        int rndArticlesPerActualOrder;
+        int multiplicator;
+        int month;
+        int lastOrderID;
+        List<Article> allArticles = Article.getArticleList();
 
         for (int i = 0; i < numberOfDays; i++) {
-            int posInOrder = rnd.nextInt(20 - 5 + 1) + 5;
-            con.createOrder(fromDate.plusDays(i));
-            for (int j = 0; j < posInOrder; j++) {
-
-                //TODO: maybe dont just take random Articles
-
-                int articleID = rnd.nextInt(11 - 1 + 1) + 1;
-                int behaviourID = 0;
-                int multiplicator = 0;
-                int month = fromDate.plusDays(i).getMonthValue();
-                List<Article> list = Article.getArticleList();
-                for (Article article : list) {
-                    if (article.getArticleID() == articleID) {
-                        for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
-                            if (article.getBehaviourID() == behaviour.getId()) {
-                                behaviourID = behaviour.getId();
-                                multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
-                                for (int k = 0; k < multiplicator; k++) {
-                                    new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
-                                    ordArtID++;
+            int maxNumberOfOrderPerDay = Const.MAX_ORDER_PER_DAY;
+            int minNumberOfOrderPerDay = Const.MIN_ORDER_PER_DAY;
+            int maxNumberOfArticlesPerOrder = Const.MAX_ARTICLES_PER_ORDER;
+            int minNumberOfArticlesPerOrder = Const.MIN_ARTICLES_PER_ORDER;
+            lastOrderID = con.getLastOrderID();
+            rndOrdersPerActualDay = rnd.nextInt(maxNumberOfOrderPerDay - minNumberOfOrderPerDay + 1) + minNumberOfOrderPerDay;
+            month = fromDate.plusDays(1).getMonthValue();
+            for (int j = 0; j < rndOrdersPerActualDay; j++) {
+                con.createOrder(fromDate.plusDays(i));
+                Position.getPositionList().clear();
+                rndArticlesPerActualOrder = rnd.nextInt( maxNumberOfArticlesPerOrder - minNumberOfArticlesPerOrder + 1) + minNumberOfArticlesPerOrder;
+                while (Position.getPositionList().size() < rndArticlesPerActualOrder) {
+                    Article article = allArticles.get(rnd.nextInt(allArticles.size()));
+                    multiplicator = 0;
+                    switch (article.getBehaviourID()) {
+                        case 0:
+                            multiplicator = rnd.nextInt(5 - 2 + 1) + 2;
+                            break;
+                        default:
+                            for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
+                                if (article.getBehaviourID() == behaviour.getId()) {
+                                    multiplicator = behaviour.getMultiplicatorsList().get(month-1);
+                                    if (multiplicator > 1) {
+                                        multiplicator = rnd.nextInt(multiplicator - (multiplicator / 2));
+                                    } else {
+                                        multiplicator = rnd.nextInt(6-1+1)+1;
+                                        if (multiplicator != 1){
+                                            multiplicator = 0;
+                                        }
+                                    }
                                 }
                             }
+                            break;
+                    }
+                    for (int k = 0; k < multiplicator; k++) {
+                        if (Position.getPositionList().size() < rndArticlesPerActualOrder) {
+                            new Position(article, lastOrderID + j);
                         }
                     }
+                }
+                for (Position position:Position.getPositionList()){
+                    new DBData(position.getArticle().getArticleID(), position.getOrderID());
                 }
             }
         }
     }
 
-    public void start() {
+    @Override
+    public void run() {
         con.connect();
         con.getArticles();
         DataBehaviour.getXmlFile();
         DataBehaviour.createBehaviourFromXml();
-        for (Article article:Article.getArticleList()) {
+        for (Article article : Article.getArticleList()) {
             article.setBehaviourID();
         }
-        List<Article> artList = Article.getArticleList();
-        List<DataBehaviour> behavList = DataBehaviour.getBehaviourList();
-        behavList.size();
-        artList.size();
-//        int count = 0;
-//        con.connect();
-//        con.getArticles();
-//
-//        long startTime = System.nanoTime();
-//        createData(con.getLastArticleOrderID(), con.getLastOrderID());
-//        for (int i = 0; i < DBData.getDataList().size(); i++) {
-//            count = i;
-//            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
-//            int finalI = i;
-//            Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
-//            Util.delay(5);
-//        }
-//        con.close();
-//        long endTime = System.nanoTime();
-//        long duration = (endTime - startTime) / 1000000000;
-//        int finalCount = count;
-//        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
+        int count = 0;
+        con.connect();;
+        long startTime = System.nanoTime();
+        Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n"));
+        createData();
+        Platform.runLater(() -> controller.taResult.appendText("Writing to Database...\n"));
+        for (int i = 0; i < DBData.getDataList().size(); i++) {
+            count = i;
+            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID());
+            int finalI = i;
+            Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
+        }
+        controller.btnTruncate.setDisable(false);
+        con.close();
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        int finalCount = count + 1;
+        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
     }
 }
