@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <behaviours>
-    <behviour>
+    <behaviour>
         <id>1</id>
         <name>summer</name>
+		<article>12</article>
+		<article>13</article>
         <multiplicators>0</multiplicators>
         <multiplicators>0</multiplicators>
         <multiplicators>1</multiplicators>
@@ -15,10 +17,14 @@
         <multiplicators>1</multiplicators>
         <multiplicators>0</multiplicators>
         <multiplicators>0</multiplicators>
-    </behviour>
-    <behviour>
+    </behaviour>
+    <behaviour>
         <id>2</id>
         <name>winter</name>
+		<article>8</article>
+		<article>9</article>
+		<article>10</article>
+		<article>11</article>
         <multiplicators>3</multiplicators>
         <multiplicators>2</multiplicators>
         <multiplicators>1</multiplicators>
@@ -31,42 +37,33 @@
         <multiplicators>2</multiplicators>
         <multiplicators>3</multiplicators>
         <multiplicators>3</multiplicators>
-    </behviour>
-    <behviour>
+    </behaviour>
+    <behaviour>
         <id>3</id>
-        <name>spring</name>
-        <multiplicators>2</multiplicators>
-        <multiplicators>2</multiplicators>
+        <name>between</name>
+		<article>5</article>
+		<article>6</article>
+		<article>7</article>
+        <multiplicators>1</multiplicators>
+        <multiplicators>1</multiplicators>
         <multiplicators>3</multiplicators>
         <multiplicators>3</multiplicators>
-        <multiplicators>2</multiplicators>
-        <multiplicators>2</multiplicators>
+        <multiplicators>3</multiplicators>
         <multiplicators>1</multiplicators>
         <multiplicators>1</multiplicators>
-        <multiplicators>0</multiplicators>
-        <multiplicators>0</multiplicators>
         <multiplicators>1</multiplicators>
+        <multiplicators>3</multiplicators>
+        <multiplicators>3</multiplicators>
+        <multiplicators>3</multiplicators>
         <multiplicators>1</multiplicators>
-    </behviour>
-    <behviour>
+    </behaviour>
+    <behaviour>
         <id>4</id>
-        <name>autumn</name>
-        <multiplicators>2</multiplicators>
-        <multiplicators>1</multiplicators>
-        <multiplicators>1</multiplicators>
-        <multiplicators>0</multiplicators>
-        <multiplicators>0</multiplicators>
-        <multiplicators>1</multiplicators>
-        <multiplicators>1</multiplicators>
-        <multiplicators>2</multiplicators>
-        <multiplicators>3</multiplicators>
-        <multiplicators>3</multiplicators>
-        <multiplicators>3</multiplicators>
-        <multiplicators>2</multiplicators>
-    </behviour>
-    <behviour>
-        <id>5</id>
         <name>standard</name>
+		<article>1</article>
+		<article>2</article>
+		<article>3</article>
+		<article>4</article>
         <multiplicators>1</multiplicators>
         <multiplicators>1</multiplicators>
         <multiplicators>1</multiplicators>
@@ -79,5 +76,5 @@
         <multiplicators>1</multiplicators>
         <multiplicators>1</multiplicators>
         <multiplicators>1</multiplicators>
-    </behviour>
+    </behaviour>
 </behaviours>
