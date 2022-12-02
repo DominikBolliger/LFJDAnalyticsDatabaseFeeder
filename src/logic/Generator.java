@@ -2,7 +2,6 @@ package logic;
 
 import controller.LFJDAnalyticsDatabaseFeederController;
 import javafx.application.Platform;
-import logic.DBConnection;
 import modell.Article;
 import modell.DBData;
 import modell.DataBehaviour;
@@ -22,13 +21,13 @@ public class Generator extends Thread {
     private DBConnection con;
     private LFJDAnalyticsDatabaseFeederController controller;
 
-    public Generator(LocalDate fromDate, LocalDate toDate, LFJDAnalyticsDatabaseFeederController controller) {
+    public Generator(LocalDate fromDate, LocalDate toDate, LFJDAnalyticsDatabaseFeederController controller, DBConnection con) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.numberOfDays = DAYS.between(fromDate, toDate);
         this.lastOrderNumber = 0;
         this.controller = controller;
-        this.con = new DBConnection();
+        this.con = con;
     }
 
     public void createData(int lastArticleOrderID, int lastOrderID) {
@@ -57,7 +56,7 @@ public class Generator extends Thread {
                         for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
                             if (article.getBehaviourID() == behaviour.getId()) {
                                 behaviourID = behaviour.getId();
-                                multiplicator = behaviour.getMultiplicators().get(month - 1);
+                                multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
                                 for (int k = 0; k < multiplicator; k++) {
                                     new DBData(fromDate.plusDays(i), articleID, orderID + i, ordArtID, behaviourID);
                                     ordArtID++;
@@ -71,23 +70,34 @@ public class Generator extends Thread {
     }
 
     public void start() {
-        int count = 0;
         con.connect();
         con.getArticles();
-        Platform.runLater(() -> controller.taResult.appendText("Database connected\n"));
-        long startTime = System.nanoTime();
-        createData(con.getLastArticleOrderID(), con.getLastOrderID());
-        for (int i = 0; i < DBData.getDataList().size(); i++) {
-            count = i;
-            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
-            int finalI = i;
-            Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
-            Util.delay(5);
+        DataBehaviour.getXmlFile();
+        DataBehaviour.createBehaviourFromXml();
+        for (Article article:Article.getArticleList()) {
+            article.setBehaviourID();
         }
-        con.close();
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime) / 1000000000;
-        int finalCount = count;
-        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
+        List<Article> artList = Article.getArticleList();
+        List<DataBehaviour> behavList = DataBehaviour.getBehaviourList();
+        behavList.size();
+        artList.size();
+//        int count = 0;
+//        con.connect();
+//        con.getArticles();
+//
+//        long startTime = System.nanoTime();
+//        createData(con.getLastArticleOrderID(), con.getLastOrderID());
+//        for (int i = 0; i < DBData.getDataList().size(); i++) {
+//            count = i;
+//            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID(), controller);
+//            int finalI = i;
+//            Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
+//            Util.delay(5);
+//        }
+//        con.close();
+//        long endTime = System.nanoTime();
+//        long duration = (endTime - startTime) / 1000000000;
+//        int finalCount = count;
+//        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
     }
 }

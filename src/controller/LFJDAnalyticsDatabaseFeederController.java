@@ -30,20 +30,22 @@ public class LFJDAnalyticsDatabaseFeederController {
     public ProgressBar pgbResult;
     @FXML
     public VBox vBoxLog;
+    public DBConnection con;
 
     public void generate() {
         if (fromDatePicker.getValue() != null && toDatePicker.getValue() != null && fromDatePicker.getValue().isBefore(toDatePicker.getValue())) {
-            Generator gen = new Generator(fromDatePicker.getValue(), toDatePicker.getValue(), this);
+            con = new DBConnection("jdbc:mysql://localhost:3306/lfjd-analytics", "root", "", this);
+            Generator gen = new Generator(fromDatePicker.getValue(), toDatePicker.getValue(), this, con);
             gen.start();
         } else {
             if (fromDatePicker.getValue() == null && toDatePicker.getValue() == null) {
-                taResult.appendText("Please select a From and To Date\r\n");
+                taResult.appendText("Please select a From and To Date\n");
             } else if (fromDatePicker.getValue() == null) {
-                taResult.appendText("Please select a From Date\r\n");
+                taResult.appendText("Please select a From Date\n");
             } else if (toDatePicker.getValue() == null) {
-                taResult.appendText("Please select a To Date\r\n");
-            } else if (!fromDatePicker.getValue().isBefore(toDatePicker.getValue())){
-                taResult.appendText("Please Make sure To Date is after From Date\r\n");
+                taResult.appendText("Please select a To Date\n");
+            } else if (!fromDatePicker.getValue().isBefore(toDatePicker.getValue())) {
+                taResult.appendText("Please Make sure To Date is after From Date\n");
             }
         }
     }
@@ -53,8 +55,7 @@ public class LFJDAnalyticsDatabaseFeederController {
         stage.close();
     }
 
-    public void btnTruncateClick(ActionEvent actionEvent) {
-        DBConnection con = new DBConnection();
+    public void btnTruncateClick() {
         con.connect();
         con.truncateTables(this);
         con.close();
