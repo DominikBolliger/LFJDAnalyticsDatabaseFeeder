@@ -57,7 +57,7 @@ public class Generator extends Thread {
             for (int j = 0; j < rndOrdersPerActualDay; j++) {
                 con.createOrder(fromDate.plusDays(i));
                 Position.getPositionList().clear();
-                rndArticlesPerActualOrder = rnd.nextInt( maxNumberOfArticlesPerOrder - minNumberOfArticlesPerOrder + 1) + minNumberOfArticlesPerOrder;
+                rndArticlesPerActualOrder = rnd.nextInt(maxNumberOfArticlesPerOrder - minNumberOfArticlesPerOrder + 1) + minNumberOfArticlesPerOrder;
                 while (Position.getPositionList().size() < rndArticlesPerActualOrder) {
                     Article article = allArticles.get(rnd.nextInt(allArticles.size()));
                     multiplicator = 0;
@@ -68,12 +68,12 @@ public class Generator extends Thread {
                         default:
                             for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
                                 if (article.getBehaviourID() == behaviour.getId()) {
-                                    multiplicator = behaviour.getMultiplicatorsList().get(month-1);
+                                    multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
                                     if (multiplicator > 1) {
-                                        multiplicator = rnd.nextInt(multiplicator - (multiplicator / 2));
+                                        multiplicator = rnd.nextInt(multiplicator - (multiplicator / 2) + 1) + (multiplicator / 2);
                                     } else {
-                                        multiplicator = rnd.nextInt(6-1+1)+1;
-                                        if (multiplicator != 1){
+                                        multiplicator = rnd.nextInt(6 - 1 + 1) + 1;
+                                        if (multiplicator != 1) {
                                             multiplicator = 0;
                                         }
                                     }
@@ -87,7 +87,7 @@ public class Generator extends Thread {
                         }
                     }
                 }
-                for (Position position:Position.getPositionList()){
+                for (Position position : Position.getPositionList()) {
                     new DBData(position.getArticle().getArticleID(), position.getOrderID());
                 }
             }
@@ -104,7 +104,8 @@ public class Generator extends Thread {
             article.setBehaviourID();
         }
         int count = 0;
-        con.connect();;
+        con.connect();
+        ;
         long startTime = System.nanoTime();
         Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n"));
         createData();
