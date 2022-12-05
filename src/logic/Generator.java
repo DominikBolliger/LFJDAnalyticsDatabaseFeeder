@@ -9,8 +9,10 @@ import modell.DBData;
 import modell.DataBehaviour;
 import modell.Position;
 import util.Const;
+import util.LFJDLogger;
 import util.Util;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ public class Generator extends Thread {
     private DBConnection con;
     private LFJDAnalyticsDatabaseFeederController controller;
 
-    private Random rnd = new Random();
+    private Random rnd = new SecureRandom();
 
     public Generator(LocalDate fromDate, LocalDate toDate, LFJDAnalyticsDatabaseFeederController controller, DBConnection con) {
         this.fromDate = fromDate;
@@ -50,7 +52,7 @@ public class Generator extends Thread {
             int minNumberOfOrderPerDay = Const.MIN_ORDER_PER_DAY;
             int maxNumberOfArticlesPerOrder = Const.MAX_ARTICLES_PER_ORDER;
             int minNumberOfArticlesPerOrder = Const.MIN_ARTICLES_PER_ORDER;
-            lastOrderID = con.getLastOrderID();
+            lastOrderID = con.getLastOrderID() + 1;
             rndOrdersPerActualDay = rnd.nextInt(maxNumberOfOrderPerDay - minNumberOfOrderPerDay + 1) + minNumberOfOrderPerDay;
             month = fromDate.plusDays(1).getMonthValue();
             for (int j = 0; j < rndOrdersPerActualDay; j++) {
@@ -58,35 +60,27 @@ public class Generator extends Thread {
                 Position.getPositionList().clear();
                 rndArticlesPerActualOrder = rnd.nextInt(maxNumberOfArticlesPerOrder - minNumberOfArticlesPerOrder + 1) + minNumberOfArticlesPerOrder;
                 while (Position.getPositionList().size() < rndArticlesPerActualOrder) {
-                    Article article = allArticles.get(rnd.nextInt(allArticles.size()));
+                    int rndArticle = rnd.nextInt(allArticles.size());
+                    Article article = allArticles.get(rndArticle);
+                    System.out.println(article.getName());
                     multiplicator = 0;
                     switch (article.getBehaviourID()) {
                         case 4:
-                            multiplicator = rnd.nextInt(5 - 2 + 1) + 2;
+                            multiplicator = 1;
                             break;
                         case 3, 2, 1:
                             for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
                                 if (article.getBehaviourID() == behaviour.getId()) {
                                     multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
-                                    if (multiplicator > 1) {
-
-                                        multiplicator = rnd.nextInt(multiplicator - (multiplicator / 2) + 1) + (multiplicator / 2);
-                                    } else {
-                                        multiplicator = rnd.nextInt(6 - 1 + 1) + 1;
-                                        if (multiplicator != 1) {
-                                            multiplicator = 0;
-                                        }
-                                    }
                                     break;
                                 }
                             }
                             break;
                     }
-                    System.out.println(article.getName() + ": " + multiplicator);
-                    for (int k = 0; k < multiplicator; k++) {
-                        if (Position.getPositionList().size() < rndArticlesPerActualOrder) {
-                            new Position(article, lastOrderID + j);
-                        }
+
+                    if (multiplicator != 0 && Position.getPositionList().size() < rndArticlesPerActualOrder) {
+                        new Position(article, lastOrderID + j);
+                        LFJDLogger.log("Date: " + fromDate.plusDays(i) + " |OrderID: " + (lastOrderID + j) + " | Article: " + article.getName() + " | BehaviourID: " + article.getBehaviourID());
                     }
                 }
                 for (Position position : Position.getPositionList()) {
@@ -106,24 +100,29 @@ public class Generator extends Thread {
             article.setBehaviourID();
         }
         int count = 0;
-        con.connect();
-        ;
         long startTime = System.nanoTime();
         Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n"));
         createData();
+        for (DBData data:DBData.getDataList()) {
+            System.out.println(data.getArticleID());
+        }
         Platform.runLater(() -> controller.taResult.appendText("Writing to Database...\n"));
         for (int i = 0; i < DBData.getDataList().size(); i++) {
             count = i;
-            con.writeDataToDB(i, DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID());
+            con.writeDataToDB(DBData.getDataList().get(i).getOrderID(), DBData.getDataList().get(i).getArticleID());
             int finalI = i;
             Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
         }
-        controller.btnTruncate.setDisable(false);
-        controller.btnClose.setText("Close");
+
         con.close();
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / 1000000000;
         int finalCount = count + 1;
-        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
+        Platform.runLater(() -> {
+            controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n");
+            controller.taResult.appendText("----------------------------------------------------\n");
+            controller.btnTruncate.setDisable(false);
+            controller.btnClose.setText("Close");
+        });
     }
 }

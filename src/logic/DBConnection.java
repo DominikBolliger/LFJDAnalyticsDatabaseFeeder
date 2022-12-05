@@ -40,7 +40,10 @@ public class DBConnection {
     public void close() {
         try {
             con.close();
-            Platform.runLater(() -> controller.taResult.appendText("Connection closed..\n"));
+            Platform.runLater(() -> {
+                controller.taResult.appendText("Connection closed\n");
+                controller.taResult.appendText("-------------------------------------\n");
+            });
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -102,13 +105,12 @@ public class DBConnection {
         }
     }
 
-    public void writeDataToDB(int count, int orderID, int articleID) {
+    public void writeDataToDB(int orderID, int articleID) {
         Statement stmt;
         try {
             stmt = con.createStatement();
             stmt.executeUpdate("INSERT INTO position (fk_orderID, fk_articleID) VALUES ('" + orderID + "','" + articleID + "')");
 //            Platform.runLater(() -> controller.taResult.appendText(count + ". ArticleID: " + articleID + " | OrderID: " + orderID + "\n"));
-            System.out.println(count);
         } catch (SQLException e) {
             e.printStackTrace();
         }
