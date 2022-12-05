@@ -26,7 +26,7 @@ public class Generator extends Thread {
     private DBConnection con;
     private LFJDAnalyticsDatabaseFeederController controller;
 
-    private Random rnd;
+    private Random rnd = new Random();
 
     public Generator(LocalDate fromDate, LocalDate toDate, LFJDAnalyticsDatabaseFeederController controller, DBConnection con) {
         this.fromDate = fromDate;
@@ -38,7 +38,6 @@ public class Generator extends Thread {
     }
 
     public void createData() {
-        rnd = new Random();
         int rndOrdersPerActualDay;
         int rndArticlesPerActualOrder;
         int multiplicator;
@@ -62,14 +61,15 @@ public class Generator extends Thread {
                     Article article = allArticles.get(rnd.nextInt(allArticles.size()));
                     multiplicator = 0;
                     switch (article.getBehaviourID()) {
-                        case 0:
+                        case 4:
                             multiplicator = rnd.nextInt(5 - 2 + 1) + 2;
                             break;
-                        default:
+                        case 3, 2, 1:
                             for (DataBehaviour behaviour : DataBehaviour.getBehaviourList()) {
                                 if (article.getBehaviourID() == behaviour.getId()) {
                                     multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
                                     if (multiplicator > 1) {
+
                                         multiplicator = rnd.nextInt(multiplicator - (multiplicator / 2) + 1) + (multiplicator / 2);
                                     } else {
                                         multiplicator = rnd.nextInt(6 - 1 + 1) + 1;
@@ -77,10 +77,12 @@ public class Generator extends Thread {
                                             multiplicator = 0;
                                         }
                                     }
+                                    break;
                                 }
                             }
                             break;
                     }
+                    System.out.println(article.getName() + ": " + multiplicator);
                     for (int k = 0; k < multiplicator; k++) {
                         if (Position.getPositionList().size() < rndArticlesPerActualOrder) {
                             new Position(article, lastOrderID + j);
@@ -117,6 +119,7 @@ public class Generator extends Thread {
             Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
         }
         controller.btnTruncate.setDisable(false);
+        controller.btnClose.setText("Close");
         con.close();
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / 1000000000;
