@@ -108,7 +108,6 @@ public class DBConnection {
             stmt = con.createStatement();
             stmt.executeUpdate("INSERT INTO position (fk_orderID, fk_articleID) VALUES ('" + orderID + "','" + articleID + "')");
 //            Platform.runLater(() -> controller.taResult.appendText(count + ". ArticleID: " + articleID + " | OrderID: " + orderID + "\n"));
-            System.out.println(count);
         } catch (SQLException e) {
             e.printStackTrace();
         }

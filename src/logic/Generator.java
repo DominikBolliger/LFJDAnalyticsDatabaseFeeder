@@ -9,6 +9,7 @@ import modell.DBData;
 import modell.DataBehaviour;
 import modell.Position;
 import util.Const;
+import util.LFJDLogger;
 import util.Util;
 
 import java.time.LocalDate;
@@ -82,10 +83,10 @@ public class Generator extends Thread {
                             }
                             break;
                     }
-                    System.out.println(article.getName() + ": " + multiplicator);
                     for (int k = 0; k < multiplicator; k++) {
                         if (Position.getPositionList().size() < rndArticlesPerActualOrder) {
                             new Position(article, lastOrderID + j);
+                            LFJDLogger.log("Position: " + (lastOrderID + j) + " | Article: " + article.getName() + " | Time: " + fromDate.plusDays(i));
                         }
                     }
                 }
@@ -107,7 +108,6 @@ public class Generator extends Thread {
         }
         int count = 0;
         con.connect();
-        ;
         long startTime = System.nanoTime();
         Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n"));
         createData();
@@ -118,12 +118,14 @@ public class Generator extends Thread {
             int finalI = i;
             Platform.runLater(() -> controller.pgbResult.setProgress((float) 1 / DBData.getDataList().size() * finalI));
         }
-        controller.btnTruncate.setDisable(false);
-        controller.btnClose.setText("Close");
         con.close();
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / 1000000000;
         int finalCount = count + 1;
-        Platform.runLater(() -> controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n"));
+        Platform.runLater(() -> {
+            controller.btnTruncate.setDisable(false);
+            controller.btnClose.setText("Close");
+            controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n");
+        });
     }
 }
