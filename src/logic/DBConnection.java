@@ -40,7 +40,10 @@ public class DBConnection {
     public void close() {
         try {
             con.close();
-            Platform.runLater(() -> controller.taResult.appendText("Connection closed..\n"));
+            Platform.runLater(() -> {
+                controller.taResult.appendText("Connection closed\n");
+                controller.taResult.appendText("-------------------------------------\n");
+            });
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -102,7 +105,7 @@ public class DBConnection {
         }
     }
 
-    public void writeDataToDB(int count, int orderID, int articleID) {
+    public void writeDataToDB(int orderID, int articleID) {
         Statement stmt;
         try {
             stmt = con.createStatement();
