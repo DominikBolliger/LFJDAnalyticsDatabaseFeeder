@@ -62,7 +62,6 @@ public class Generator extends Thread {
                 while (Position.getPositionList().size() < rndArticlesPerActualOrder) {
                     int rndArticle = rnd.nextInt(allArticles.size());
                     Article article = allArticles.get(rndArticle);
-                    System.out.println(article.getName());
                     multiplicator = 0;
                     switch (article.getBehaviourID()) {
                         case 4:
@@ -101,11 +100,9 @@ public class Generator extends Thread {
         }
         int count = 0;
         long startTime = System.nanoTime();
-        Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n"));
+        Platform.runLater(() -> controller.taResult.appendText("Preparing Data...\n" +
+                "Depending on the Time Range and RNG this can take a while...\n"));
         createData();
-        for (DBData data:DBData.getDataList()) {
-            System.out.println(data.getArticleID());
-        }
         Platform.runLater(() -> controller.taResult.appendText("Writing to Database...\n"));
         for (int i = 0; i < DBData.getDataList().size(); i++) {
             count = i;
@@ -119,7 +116,7 @@ public class Generator extends Thread {
         long duration = (endTime - startTime) / 1000000000;
         int finalCount = count + 1;
         Platform.runLater(() -> {
-            controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds..\n");
+            controller.taResult.appendText("Database updated with " + finalCount + " items in " + duration + " seconds...\n");
             controller.taResult.appendText("----------------------------------------------------\n");
             controller.btnTruncate.setDisable(false);
             controller.btnClose.setText("Close");
