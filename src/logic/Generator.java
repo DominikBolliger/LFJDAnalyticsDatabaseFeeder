@@ -76,10 +76,9 @@ public class Generator extends Thread {
                             }
                             break;
                     }
-
                     if (multiplicator != 0 && Position.getPositionList().size() < rndArticlesPerActualOrder) {
                         new Position(article, lastOrderID + j);
-                        LFJDLogger.log("Date: " + fromDate.plusDays(i) + " |OrderID: " + (lastOrderID + j) + " | Article: " + article.getName() + " | BehaviourID: " + article.getBehaviourID());
+                        //LFJDLogger.log("Date: " + fromDate.plusDays(i) + " |OrderID: " + (lastOrderID + j) + " | Article: " + article.getName() + " | BehaviourID: " + article.getBehaviourID());
                     }
                 }
                 for (Position position : Position.getPositionList()) {

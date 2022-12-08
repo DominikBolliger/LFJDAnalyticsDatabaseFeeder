@@ -33,8 +33,8 @@ public class LFJDAnalyticsDatabaseFeederController {
 
     @FXML
     public void initialize(){
-        LocalDate today = LocalDate.now();
-        LocalDate nextYearDay = today.plusDays(31);
+        LocalDate today = LocalDate.parse("2022-06-01");
+        LocalDate nextYearDay = LocalDate.parse("2022-07-31");
 
         fromDatePicker.setValue(today);
         toDatePicker.setValue(nextYearDay);
