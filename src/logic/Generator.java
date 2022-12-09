@@ -37,6 +37,7 @@ public class Generator extends Thread {
         this.lastOrderNumber = 0;
         this.controller = controller;
         this.con = con;
+        this.setDaemon(true);
     }
 
     public void createData() {
@@ -78,7 +79,6 @@ public class Generator extends Thread {
                     }
                     if (multiplicator != 0 && Position.getPositionList().size() < rndArticlesPerActualOrder) {
                         new Position(article, lastOrderID + j);
-                        //LFJDLogger.log("Date: " + fromDate.plusDays(i) + " |OrderID: " + (lastOrderID + j) + " | Article: " + article.getName() + " | BehaviourID: " + article.getBehaviourID());
                     }
                 }
                 for (Position position : Position.getPositionList()) {
