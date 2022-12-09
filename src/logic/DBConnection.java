@@ -49,23 +49,6 @@ public class DBConnection {
         }
     }
 
-    public int getLastArticleOrderID() {
-        int articleOrderNumber = 0;
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("Select positionID from position order by positionID DESC LIMIT 1");
-            if (rs.next()) {
-                articleOrderNumber = rs.getInt("articleorderID");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        if (articleOrderNumber == 0) {
-            articleOrderNumber = 1;
-        }
-        return articleOrderNumber;
-    }
-
     public int getLastOrderID() {
         int orderNumber = 0;
         try {
@@ -76,9 +59,6 @@ public class DBConnection {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        if (orderNumber == 0) {
-            orderNumber = 1;
         }
         return orderNumber;
     }
