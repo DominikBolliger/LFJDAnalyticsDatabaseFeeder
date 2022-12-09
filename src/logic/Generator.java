@@ -55,7 +55,7 @@ public class Generator extends Thread {
             int minNumberOfArticlesPerOrder = Const.MIN_ARTICLES_PER_ORDER;
             lastOrderID = con.getLastOrderID() + 1;
             rndOrdersPerActualDay = rnd.nextInt(maxNumberOfOrderPerDay - minNumberOfOrderPerDay + 1) + minNumberOfOrderPerDay;
-            month = fromDate.plusDays(1).getMonthValue();
+            month = fromDate.plusDays(i).getMonthValue();
             for (int j = 0; j < rndOrdersPerActualDay; j++) {
                 con.createOrder(fromDate.plusDays(i));
                 Position.getPositionList().clear();
@@ -73,6 +73,12 @@ public class Generator extends Thread {
                                 if (article.getBehaviourID() == behaviour.getId()) {
                                     multiplicator = behaviour.getMultiplicatorsList().get(month - 1);
                                     break;
+                                }
+                            }
+                            if (multiplicator == 0){
+                                int rndOffSeasonArticle = rnd.nextInt(Const.RANDOM_OFF_SEASON_NUM-1+1)+1;
+                                if (rndOffSeasonArticle == 1){
+                                    multiplicator = 1;
                                 }
                             }
                             break;
