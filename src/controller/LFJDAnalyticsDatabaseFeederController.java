@@ -34,12 +34,12 @@ public class LFJDAnalyticsDatabaseFeederController {
     @FXML
     public void initialize(){
         LocalDate today = LocalDate.parse("2022-01-01");
-        LocalDate nextYearDay = LocalDate.parse("2022-12-31");
+        LocalDate nextYearDay = LocalDate.parse("2023-12-31");
 
         fromDatePicker.setValue(today);
         toDatePicker.setValue(nextYearDay);
 
-        con = new DBConnection("jdbc:mysql://localhost:3306/lfjd-analytics", "root", "", this);
+        con = new DBConnection("jdbc:mysql://az-srv01.switzerlandnorth.cloudapp.azure.com:3306/lfjd-analytics", "lfjd", "ABBts!1234", this);
 
     }
 
